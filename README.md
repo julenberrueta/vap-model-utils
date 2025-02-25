@@ -7,7 +7,7 @@
 ## 📁 Project Structure
 
 ```
-vap_utils/
+vap-model-utils/
 │
 ├── vap_utils/                      # Main package directory
 │   ├── __init__.py                 # Initializes the package

@@ -7,6 +7,9 @@ Created: 2024-10-27
 -----------------------------------------------------
 """
 
+import pandas as pd
+import numpy as np
+
 def generate_backward_hourly_windows(df, hour_interval, outcome_date_col):
     """
     Generates backward hourly time windows from the specified outcome date,

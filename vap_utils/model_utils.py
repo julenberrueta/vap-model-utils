@@ -7,6 +7,12 @@ Created: 2024-10-27
 -----------------------------------------------------
 """
 
+import numpy as np
+from sklearn.utils import resample
+from sklearn.model_selection import StratifiedKFold, cross_val_score
+from xgboost import XGBClassifier
+import optuna
+
 def downsampling(X_train, y_train, majority_proportion=1.0):
     """
     Performs downsampling on the majority class to balance the dataset.

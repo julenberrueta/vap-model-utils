@@ -7,6 +7,9 @@ Created: 2024-10-27
 -----------------------------------------------------
 """
 
+import pandas as pd
+import numpy as np
+
 def impute_first_row_and_forward_fill(df, group_col, imputer):
     """
     Imputes missing values only in the first row of each group and forward-fills these values

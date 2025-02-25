@@ -7,6 +7,8 @@ Created: 2024-10-27
 -----------------------------------------------------
 """
 
+import re
+
 def extract_value(pattern, x):
     """
     Extracts the first match from a string based on a given regular expression pattern.

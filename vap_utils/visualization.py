@@ -8,6 +8,9 @@ Created: 2024-10-27
 -----------------------------------------------------
 """
 
+import pandas as pd
+import plotly.graph_objects as go
+
 def assign_color(prob):
     """
     Assigns a pastel color based on the probability value.

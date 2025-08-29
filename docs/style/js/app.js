@@ -2,7 +2,7 @@
 function fmt(ts) {
   const d = new Date(ts);
   const pad = n => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 function nearestTs(ts, tsList) {
   let lo = 0, hi = tsList.length - 1;
@@ -11,7 +11,7 @@ function nearestTs(ts, tsList) {
     if (tsList[mid] < ts) lo = mid + 1; else hi = mid;
   }
   const cand1 = tsList[lo];
-  const cand0 = tsList[Math.max(0, lo-1)];
+  const cand0 = tsList[Math.max(0, lo - 1)];
   return (Math.abs(cand1 - ts) < Math.abs(cand0 - ts)) ? cand1 : cand0;
 }
 
@@ -29,12 +29,13 @@ function initSyncTooltipsOnce() {
     };
   })(Highcharts);
 
-  const sync = (e) => {
+  const sync = (e, sourceChart) => {
     Highcharts.charts.forEach((chart) => {
       if (!chart) return;
-      const xa = chart.xAxis && chart.xAxis[0];
-      if (!xa || xa.options.type !== 'datetime') return;  // ⬅️ solo línea/área (Rect1/Rect2)
-      const ev = chart.pointer.normalize(e);
+      if (chart === sourceChart) return;                // no duplicar
+      if (chart.renderTo.id === 'hc-rect3') return;     // excluir SHAP
+
+      const ev = chart.pointer.normalize(e);           // normaliza evento
       const s0 = chart.series && chart.series[0];
       if (!s0) return;
       const point = s0.searchPoint(ev, true);
@@ -42,54 +43,64 @@ function initSyncTooltipsOnce() {
     });
   };
 
-  ['mousemove','touchmove','touchstart'].forEach(evt =>
-    document.addEventListener(evt, sync, { passive: true })
-  );
+  // Para cada gráfico sincronizable, añadimos listeners locales
+  ['hc-rect1', 'hc-rect2'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
 
-  document.addEventListener('mouseleave', () => {
-    Highcharts.charts.forEach((chart) => {
-      if (!chart) return;
-      const xa = chart.xAxis && chart.xAxis[0];
-      if (!xa || xa.options.type !== 'datetime') return;
-      chart.tooltip.hide();
-      xa.hideCrosshair();
+    el.addEventListener('mousemove', function (e) {
+      const chart = el.chart;
+      if (chart) sync(e, chart);
+    });
+
+    el.addEventListener('touchmove', function (e) {
+      const chart = el.chart;
+      if (chart) sync(e, chart);
+    });
+
+    el.addEventListener('mouseleave', function () {
+      const chart = el.chart;
+      if (chart) {
+        chart.tooltip.hide();
+        chart.xAxis[0].hideCrosshair();
+      }
     });
   });
 }
 
 /* ========= Carga de datos común para Rect3 ========= */
 const VARIABLES = ['peep_max', 'Age', 'pcr_median', 'antibioticos', 'temperatura_max', 'fio2_max', 'fr_min', 'fio2_median', 'pcr_min', 'peep_median', 'aspecto_secreciones_purulentas', 'spo2_median', 'pr_plateau_min', 'pcr_max', 'temperatura_median', 'fio2_min', 'pafi_min', 'linfocitos_min', 'pr_plateau_median', 'pr_peak_median', 'fr_median', 'pam_min', 'noradrenalina_sum', 'linfocitos_median', 'pafi_median', 'linfocitos_max', 'pr_peak_max', 'peep_min', 'pam_median', 'pr_peak_min', 'pafi_max', 'leucocitos_min', 'PatType_surgical', 'leucocitos_max', 'leucocitos_median', 'traqueo'];
+const PATIENTID = '16961'
 
 let HC_DATA = null; // { tsList:[], byTs:Map, lastTs:number }
 async function loadDataOnce() {
   if (HC_DATA) return HC_DATA;
   let raw;
   if (window.DATA) {
-    raw = window.DATA; // por si usas data.js
+    raw = window.DATA;
   } else {
-    const res = await fetch('./data/data.json', { cache: 'no-store' });
-    if (!res.ok) throw new Error(`No se pudo cargar ./data/data.json (HTTP ${res.status})`);
+    const res = await fetch('./data/patient.json', { cache: 'no-store' });
+    if (!res.ok) throw new Error(`No se pudo cargar ./data/patient.json (HTTP ${res.status})`);
     raw = await res.json();
   }
-  const pac = raw['10001'];
+  const pac = raw[PATIENTID];
+
   const records = [];
-  for (const fecha in pac) {
-    const horas = pac[fecha];
-    for (const hora in horas) {
-      const ts = new Date(`${fecha}T${hora}:00`).getTime();
-      records.push({
-        ts,
-        variables: horas[hora].variables,
-        prob: horas[hora].probabilidad
-      });
-    }
+  for (const hrStr in pac) {
+    const hr = Number(hrStr);
+    records.push({
+      ts: hr,   // ⬅️ usamos hr directamente
+      variables: pac[hrStr].variables,
+      prob: pac[hrStr].probabilidad
+    });
   }
-  records.sort((a,b)=>a.ts-b.ts);
-  const tsList = records.map(r=>r.ts);
+  records.sort((a, b) => a.ts - b.ts);
+  const tsList = records.map(r => r.ts);
   const byTs = new Map(records.map(r => [r.ts, r]));
-  HC_DATA = { tsList, byTs, lastTs: tsList[tsList.length-1] };
+  HC_DATA = { tsList, byTs, lastTs: tsList[tsList.length - 1] };
   return HC_DATA;
 }
+
 
 async function updateHeader(ts) {
   const ds = await loadDataOnce();
@@ -99,61 +110,62 @@ async function updateHeader(ts) {
   const elDate = document.getElementById('box-info-date');
   const elProb = document.getElementById('box-info-prob');
 
-  if (elDate) elDate.textContent = fmt(selTs);
-  if (elProb) elProb.textContent = `Probabilidad: ${(rec?.prob ?? 0).toFixed(2)}`;
+  if (elDate) elDate.textContent = `Hour: ${selTs}`;
+  if (elProb) {
+    const prob = rec?.prob ?? 0;
+    elProb.textContent = `Probability: ${prob.toFixed(2)}`;
+
+    // Escala de colores como la gráfica
+    let bgColor = '#A8E6A3'; // verde bajo
+    if (prob >= 0.25 && prob < 0.40) bgColor = '#FFF3B0'; // amarillo
+    else if (prob >= 0.40 && prob < 0.50) bgColor = '#FFD59E'; // naranja
+    else if (prob >= 0.50) bgColor = '#FFB3B3'; // rojo
+
+    elProb.style.backgroundColor = bgColor;
+  }
 }
+
 
 /* ========= Rect1: Probabilidad ========= */
 async function drawChartInRect1() {
   const containerId = 'hc-rect1';
   const el = document.getElementById(containerId);
 
-  const res = await fetch('./data/data.json', { cache: 'no-store' });
+  const res = await fetch('./data/patient.json', { cache: 'no-store' });
   if (!res.ok) { el.innerHTML = `<div class="p-3 text-danger">Error JSON (HTTP ${res.status}).</div>`; return; }
   const data = await res.json();
-  const paciente = data['10001'];
+  const paciente = data[PATIENTID];
 
   let points = [];
-  for (const fecha in paciente) {
-    const horas = paciente[fecha];
-    for (const hora in horas) {
-      const prob = pacientesafe(paciente[fecha][hora]?.probabilidad);
-      const ts = new Date(`${fecha}T${hora}:00`).getTime();
-      points.push({ x: ts, y: prob });
-    }
+  for (const hrStr in paciente) {
+    const hr = Number(hrStr);
+    const prob = pacientesafe(paciente[hrStr]?.probabilidad);
+    points.push({ x: hr, y: prob });
   }
-  points.sort((a,b)=>a.x-b.x);
+  points.sort((a, b) => a.x - b.x);
 
-  Highcharts.setOptions({ time: { useUTC: true } });
   const chart = Highcharts.chart(containerId, {
     chart: {
-      marginTop: 24,
-      reflow: true,
       type: 'line',
       zoomType: 'x',
       backgroundColor: 'transparent',
-      plotBackgroundColor: 'transparent',
-      spacing: [0,0,0,0],
-      margin: [10, 10, 35, 48], // top, right, bottom, left
+      margin: [50, 40, 70, 70],
       events: {
         click: function (e) {
           const x = e.xAxis && e.xAxis.length ? e.xAxis[0].value : undefined;
-          if (typeof x !== 'undefined') { console.log(`[Rect1] Click: ${fmt(x)}`); selectTs(x); }
+          if (typeof x !== 'undefined') { console.log(`[Rect1] Click: hr=${x}`); selectTs(x); }
         }
       }
     },
-    title: {
-      text: 'VAP probability',
-      align: 'center'
-    },
-    xAxis: { type: 'datetime', title: { text: 'Fecha' }, crosshair: { width: 1 } },
+    title: { text: 'VAP probability', align: 'center', y: 10 },
+    xAxis: { type: 'linear', title: { text: 'LOS' }, crosshair: { width: 1 } },
     yAxis: {
       min: 0,
       max: 1,
       tickInterval: 0.1,
-      title: { text: 'Probabilidad' },
+      title: { text: 'Probability' },
       plotLines: [{
-        value: 0.5,                           // ← línea horizontal en y=0.5
+        value: 0.5,
         color: '#9aa0a6',
         width: 2,
         dashStyle: 'ShortDash',
@@ -161,15 +173,14 @@ async function drawChartInRect1() {
         label: {
           text: '0.5',
           align: 'right',
-          x: -10, y: -6,
           style: { color: '#9aa0a6' }
         }
       }]
     },
     legend: { enabled: false },
-    tooltip: { xDateFormat: '%Y-%m-%d %H:%M', pointFormat: 'Probabilidad: <b>{point.y:.3f}</b>' },
+    tooltip: { pointFormat: 'Probability: <b>{point.y:.3f}</b><br>Hora: {point.x}' },
     series: [{
-      name: 'Probabilidad',
+      name: 'Probability',
       data: points,
       lineWidth: 3,
       color: '#A8E6A3',
@@ -177,20 +188,17 @@ async function drawChartInRect1() {
         { value: 0.25, color: '#A8E6A3' },
         { value: 0.40, color: '#FFF3B0' },
         { value: 0.50, color: '#FFD59E' },
-        {              color: '#FFB3B3' }
-      ],
-      point: {
-        events: {
-          click: function () { console.log(`[Rect1] Punto: ${fmt(this.x)} | prob=${this.y}`); selectTs(this.x); }
-        }
-      }
+        { color: '#FFB3B3' }
+      ]
     }],
     credits: { enabled: false }
   });
   el.chart = chart;
   initSyncTooltipsOnce();
 }
-function pacientesafe(v){ return typeof v === 'number' ? v : 0; }
+
+
+function pacientesafe(v) { return typeof v === 'number' ? v : 0; }
 
 /* ========= Rect2: Antibióticos (área) ========= */
 async function drawAntibioticosInRect2() {
@@ -198,36 +206,38 @@ async function drawAntibioticosInRect2() {
   const el = document.getElementById(containerId);
 
   const res = await fetch('./data/antibioticos.json', { cache: 'no-store' });
-  if (!res.ok) { el.innerHTML = `<div class="p-3 text-danger">Error JSON (HTTP ${res.status}).</div>`; return; }
+  if (!res.ok) {
+    el.innerHTML = `<div class="p-3 text-danger">Error JSON (HTTP ${res.status}).</div>`;
+    return;
+  }
   const data = await res.json();
-  const paciente = data['10001'];
+  const paciente = data[PATIENTID];
 
   const points = [];
-  for (const fecha in paciente) {
-    const horas = paciente[fecha];
-    for (const hora in horas) {
-      const dias = paciente[fecha][hora]?.dias_acumulados ?? 0;
-      const ts = new Date(`${fecha}T${hora}:00`).getTime();
-      points.push({ x: ts, y: dias });
-    }
+  for (const hrStr in paciente) {
+    const hr = Number(hrStr);
+    const dias = paciente[hrStr]?.dias_acumulados ?? 0;
+    points.push({ x: hr, y: dias });
   }
-  points.sort((a,b)=>a.x-b.x);
+  points.sort((a, b) => a.x - b.x);
 
-  Highcharts.setOptions({ time: { useUTC: true } });
   const chart = Highcharts.chart(containerId, {
     chart: {
-      marginTop: 24,
       reflow: true,
-      type: 'area',
+      type: 'spline',
       zoomType: 'x',
       backgroundColor: 'transparent',
-      plotBackgroundColor: 'transparent',
-      spacing: [0,0,0,0],
-      margin: [10, 10, 35, 48],
+      spacing: [0, 0, 0, 0],
+      marginRight: 40,
+      marginLeft: 70,
+      marginBottom: 70,
       events: {
         click: function (e) {
           const x = e.xAxis && e.xAxis.length ? e.xAxis[0].value : undefined;
-          if (typeof x !== 'undefined') { console.log(`[Rect2] Click: ${fmt(x)}`); selectTs(x); }
+          if (typeof x !== 'undefined') {
+            console.log(`[Rect2] Click: hr=${x}`);
+            selectTs(x);
+          }
         }
       }
     },
@@ -235,10 +245,13 @@ async function drawAntibioticosInRect2() {
       text: 'Cumulative days of antibiotic use',
       align: 'center'
     },
-    xAxis: { type: 'datetime', title: { text: 'Fecha' }, crosshair: { width: 1 } },
+    xAxis: {
+      type: 'linear',
+      title: { text: 'LOS' },
+      crosshair: { width: 1 }
+    },
     yAxis: {
-      max: 10,
-      title: { text: 'Días acumulados' },
+      title: { text: 'Antibiotic days' },
       gridLineWidth: 1,
       plotLines: [{
         value: 7,
@@ -247,7 +260,7 @@ async function drawAntibioticosInRect2() {
         dashStyle: 'ShortDash',
         zIndex: 5,
         label: {
-          text: '7 días',
+          text: '7 days',
           align: 'right',
           x: -10, y: -6,
           style: { color: '#9aa0a6' }
@@ -255,22 +268,22 @@ async function drawAntibioticosInRect2() {
       }]
     },
     legend: { enabled: false },
-    tooltip: { xDateFormat: '%Y-%m-%d %H:%M', pointFormat: 'Días acumulados: <b>{point.y:.3f}</b>' },
+    tooltip: { pointFormat: 'Antibiotic days: <b>{point.y:.0f}</b><br>Hora: {point.x}' },
     series: [{
-      name: 'Antibióticos (días)',
+      name: 'Antibiotics (days)',
       data: points,
       lineWidth: 3,
-      color: '#B3E5FC',
-      fillOpacity: 0.4,
-      fillColor: '#B3E5FC',
-      point: {
-        events: {
-          click: function () { console.log(`[Rect2] Punto: ${fmt(this.x)} | días=${this.y}`); selectTs(this.x); }
-        }
+      color: '#42a5f5',
+      fillOpacity: 0.25,
+      marker: {
+        enabled: false,
+        radius: 4,
+        fillColor: '#1565c0'
       }
     }],
     credits: { enabled: false }
   });
+
   el.chart = chart;
   initSyncTooltipsOnce();
 }
@@ -286,14 +299,14 @@ function buildShapData(record) {
     const pos = y >= 0;
     return {
       y, name: v, actual,
-      color: pos ? '#A8E6A3' : '#FFB3B3',
+      color: pos ? '#FFB3B3' : '#A8E6A3',
       dataLabels: {
         enabled: true,
         inside: false,
         align: pos ? 'left' : 'right',
         x: pos ? 6 : -6,
         style: { textOutline: 'none', color: '#000' },
-        formatter: function(){ return this.point.actual; }
+        formatter: function () { return this.point.actual; }
       }
     };
   });
@@ -331,11 +344,8 @@ async function renderShapChart(containerId, selTs) {
       scrollablePlotArea: { minHeight: Math.max(wantedH, 600) },
       backgroundColor: 'transparent',
       plotBackgroundColor: 'transparent',
-      spacing: [0,0,0,0],
-      marginLeft: 200,   // más espacio para variables largas
-      marginRight: 10,
-      marginTop: 6,
-      marginBottom: 12,
+      spacing: [0, 0, 0, 0],
+      margin: [50, 10, 10, 200],
       events: {
         click: function (e) {
           const x = e.xAxis && e.xAxis.length ? e.xAxis[0].value : undefined;
@@ -345,7 +355,8 @@ async function renderShapChart(containerId, selTs) {
     },
     title: {
       text: 'SHAP values',
-      align: 'left'
+      align: 'center',
+      y: 30
     },
     credits: { enabled: false },
     // Con inverted:true, el eje de categorías es xAxis (vertical)

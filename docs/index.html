@@ -1,96 +1,103 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-  <meta charset="UTF-8">
-  <title>VAP</title>
-  <link rel="shortcut icon" href="./images/favicon.ico"/>
+    <meta charset="UTF-8">
+    <title>VAP</title>
+    <link rel="shortcut icon" href="./images/favicon.ico" />
 
-  <!-- Bootstrap 5 CSS -->
-  <link 
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" 
-    rel="stylesheet" 
-    integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" 
-    crossorigin="anonymous"
-  >
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 
-  <!-- Bootstrap Icons -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
-  <!-- D3.js v7 -->
-  <script src="https://d3js.org/d3.v7.min.js"></script>
+    <!-- D3.js v7 -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
 
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <!-- Tu CSS -->
-  <link rel="stylesheet" href="./style/css/style.css">
+    <!-- Tu CSS -->
+    <link rel="stylesheet" href="./style/css/style.css">
 
-  <!-- Highcharts -->
-  <script src="https://code.highcharts.com/highcharts.js"></script>
+    <!-- Highcharts -->
+    <script src="https://code.highcharts.com/highcharts.js"></script>
 
-  <!-- app.js -->
-  <script src="./style/js/app.js"></script>
+    <!-- app.js -->
+    <script src="./style/js/app.js"></script>
 
 </head>
+
 <body>
-  <div id="wrapper-nav" style="margin: 0; padding: 0;">
-    <!-- Barra superior con logos -->
-    <nav class="navbar">
-      <img src="./images/logo_gencat_blanco.svg" alt="Logo Gencat" height="50" class="me-3">
-      <img src="./images/logo_ics_blanco.svg" alt="Logo ICS" height="50">
-    </nav>
-  </div>
-
-  <!-- Contenido principal -->
-  <div class="container-fluid wrapper-content" id="main-content">
-        <div id="charts" class="row h-100 g-3">
-        <div id="header-bar" class="d-flex align-items-center mb-2 px-2">
-        <span id="box" class="me-2">BOX 01</span>
-
-        <!-- Panel a la derecha, pegado -->
-        <div id="box-info" class="d-flex flex-column ms-2">
-            <div id="box-info-date" class="small text-muted lh-1">—</div>
-            <div id="box-info-prob" class="fw-bold lh-1">Probabilidad: —</div>
-        </div>
-        </div>
-        <!-- Columna izquierda (8/12) -->
-        <div class="col-8 d-flex flex-column">
-            <div class="shadow-col">
-                <!-- Rectángulo 1 -->
-                <div class="flex-fill d-flex align-items-stretch justify-content-center" style="min-height:0; margin-top: 10px;">
-                    <div id="hc-rect1" class="w-100" style="height:100%;"></div>
-                </div>
-                <!-- Rectángulo 2 -->
-                <div class="flex-fill d-flex align-items-stretch justify-content-center" id="rect2" style="min-height:0; margin-top: 30px;">
-                    <div id="hc-rect2" class="w-100" style="height:800%;"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Columna derecha (4/12) -->
-        <div id="columna-derecha" class="col-4 d-flex flex-column">
-            <div class="shadow-col">
-                <div class="flex-fill d-flex align-items-stretch justify-content-center" id="rect3" style="min-height:0;">
-                    <div id="hc-rect3" class="w-100" style="height:100%;"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <footer class="text-center">
-            <div class="container">
-                <div class="row justify-content-center align-items-center">
-                    <div class="col-auto">
-                        <img src="./images/logo_footer.png" alt="Logo HJ23" style="height: 100px; width: auto;">
-                    </div>
-                    <div class="col-auto text-start">
-                        <p class="mb-0">Hospital Universitari Joan XXIII de Tarragona</p>
-                        <p class="text-muted" style="font-size: 0.9rem;">Developed by Julen Berrueta</p>
-                    </div>
-                </div>
-            </div>
-        </footer>
+    <div id="wrapper-nav" style="margin: 0; padding: 0;">
+        <!-- Barra superior con logos -->
+        <nav class="navbar">
+            <img src="./images/logo_gencat_blanco.svg" alt="Logo Gencat" height="50" class="me-3">
+            <img src="./images/logo_ics_blanco.svg" alt="Logo ICS" height="50">
+        </nav>
     </div>
-  </div>
+
+    <!-- Contenido principal -->
+    <div class="container-fluid wrapper-content" id="main-content">
+        <div id="charts" class="row h-100 g-3">
+
+            <div id="header-bar" class="d-flex align-items-center mb-2 px-2">
+                <span id="box" class="me-2">BOX 01</span>
+
+                <!-- Panel a la derecha, pegado -->
+                <div id="box-info" class="d-flex align-items-center ms-2">
+                    <div id="box-info-prob" class="fw-bold px-2 py-1 rounded text-white"
+                        style="font-size: 1.6rem; min-width: 160px; text-align: center;">
+                        —
+                    </div>
+                    <div id="box-info-date" class="ms-2">—</div>
+                </div>
+            </div>
+
+            <!-- Columna izquierda (8/12) -->
+            <div class="col-8 d-flex flex-column">
+                <div class="shadow-col" style="background-color: rgb(255, 255, 255);">
+                    <!-- Rectángulo 1 -->
+                    <div class="flex-fill d-flex align-items-stretch justify-content-center"
+                        style="min-height:0; margin-top: 10px;">
+                        <div id="hc-rect1" class="w-100" style="height:100%;"></div>
+                    </div>
+                    <!-- Rectángulo 2 -->
+                    <div class="flex-fill d-flex align-items-stretch justify-content-center" id="rect2"
+                        style="min-height:0; margin-top: 30px;">
+                        <div id="hc-rect2" class="w-100" style="height:100%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna derecha (4/12) -->
+            <div id="columna-derecha" class="col-4 d-flex flex-column">
+                <div class="shadow-col" style="background-color: rgb(255, 255, 255);">
+                    <div class="flex-fill d-flex align-items-stretch justify-content-center" id="rect3"
+                        style="min-height:0;">
+                        <div id="hc-rect3" class="w-100" style="height:100%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="text-center">
+                <div class="container">
+                    <div class="row justify-content-center align-items-center">
+                        <div class="col-auto">
+                            <img src="./images/logo_footer.png" alt="Logo HJ23" style="height: 100px; width: auto;">
+                        </div>
+                        <div class="col-auto text-start">
+                            <p class="mb-0">Hospital Universitari Joan XXIII de Tarragona</p>
+                            <p class="text-muted" style="font-size: 0.9rem;">Developed by Julen Berrueta</p>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
 </body>
+
 </html>

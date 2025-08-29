@@ -25,13 +25,17 @@ body {
 
 .navbar-toggler.custom-small {
   padding: 0.2rem 0.4rem;
-  width: 36px;                /* más estrecho */
-  height: 36px;               /* más bajito */
-  border-width: 1px;          /* borde más fino */
+  width: 36px;
+  /* más estrecho */
+  height: 36px;
+  /* más bajito */
+  border-width: 1px;
+  /* borde más fino */
 }
 
 .navbar-toggler.custom-small:focus {
-  box-shadow: 0 0 0 0.1rem rgba(0, 123, 255, 0.25); /* sombra de foco más sutil */
+  box-shadow: 0 0 0 0.1rem rgba(0, 123, 255, 0.25);
+  /* sombra de foco más sutil */
 }
 
 .navbar-toggler-icon {
@@ -42,10 +46,13 @@ body {
   height: 20px;
 }
 
-.wrapper-content{
-  position:absolute;
-  top:70px; left:0; right:0; bottom:0;
-  padding:0;
+.wrapper-content {
+  position: absolute;
+  top: 70px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0;
 }
 
 .container-wrapper {
@@ -55,26 +62,32 @@ body {
 }
 
 #box {
-    color: rgb(39, 58, 85);
-    font-size: 40px;
-    font-family: sans-serif;
-    font-weight: bold;
-    margin: 0;
+  color: rgb(39, 58, 85);
+  font-size: 40px;
+  font-family: sans-serif;
+  font-weight: bold;
+  margin: 0;
 }
 
-#hc-rect1, #hc-rect2, #hc-rect3 { height: 100%; }
+#hc-rect1,
+#hc-rect2,
+#hc-rect3 {
+  height: 100%;
+}
 
-.highcharts-background { fill: transparent; }
+.highcharts-background {
+  fill: transparent;
+}
 
-#charts{
+#charts {
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 0px 20px 20px 20px;
 }
 
-.shadow-col{
-  box-shadow: 0 10px 30px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.08);
+.shadow-col {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.08);
   border-radius: 5px;
   padding: 8px;
   background: transparent;
@@ -82,15 +95,19 @@ body {
   margin: 0px 5px 0px 5px;
 }
 
-#header-bar { 
-  min-height: 40px; 
+#header-bar {
+  min-height: 40px;
 }
+
 #box-info-date {
-    margin-left: 8px;
-    margin-bottom: 3px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #555;
 }
+
 #box-info-prob {
   padding: 2px 8px;
   border-radius: 8px;
-  background: rgba(0,0,0,0.05); /* sutil, puedes quitarlo si lo quieres 100% transparente */
+  background: rgba(0, 0, 0, 0.05);
+  /* sutil, puedes quitarlo si lo quieres 100% transparente */
 }

@@ -43,18 +43,28 @@
     <div class="container-fluid wrapper-content" id="main-content">
         <div id="charts" class="row h-100 g-3">
 
-            <div id="header-bar" class="d-flex align-items-center mb-2 px-2">
-                <span id="box" class="me-2">BOX 01</span>
-
-                <!-- Panel a la derecha, pegado -->
-                <div id="box-info" class="d-flex align-items-center ms-2">
-                    <div id="box-info-prob" class="fw-bold px-2 py-1 rounded text-white"
-                        style="font-size: 1.6rem; min-width: 160px; text-align: center;">
-                        —
+            <div id="header-bar" class="d-flex align-items-center justify-content-between mb-2 px-2">
+                <!-- IZQUIERDA -->
+                <div class="d-flex align-items-center">
+                    <span id="box" class="me-2">BOX 01</span>
+                    <div id="box-info" class="d-flex align-items-center ms-2">
+                        <div id="box-info-prob" class="fw-bold px-2 py-1 rounded text-white"
+                            style="font-size: 1.6rem; min-width: 160px; text-align: center;">
+                            —
+                        </div>
+                        <div id="box-info-date" class="ms-2">—</div>
                     </div>
-                    <div id="box-info-date" class="ms-2">—</div>
                 </div>
-            </div>
+            
+                <!-- DERECHA (antes estaba en el footer) -->
+                <div id="header-footer" class="d-flex align-items-center">
+                    <img src="./images/logo_footer.png" alt="Logo HJ23" style="height: 100px; width: auto;" class="me-2">
+                    <div class="text-end">
+                        <p class="mb-0">Hospital Universitari Joan XXIII de Tarragona</p>
+                        <p class="text-muted" style="font-size: 0.9rem;">Developed by Julen Berrueta</p>
+                    </div>
+                </div>
+            </div>            
 
             <!-- Columna izquierda (8/12) -->
             <div class="col-8 d-flex flex-column">
@@ -81,21 +91,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Footer -->
-            <footer class="text-center">
-                <div class="container">
-                    <div class="row justify-content-center align-items-center">
-                        <div class="col-auto">
-                            <img src="./images/logo_footer.png" alt="Logo HJ23" style="height: 100px; width: auto;">
-                        </div>
-                        <div class="col-auto text-start">
-                            <p class="mb-0">Hospital Universitari Joan XXIII de Tarragona</p>
-                            <p class="text-muted" style="font-size: 0.9rem;">Developed by Julen Berrueta</p>
-                        </div>
-                    </div>
-                </div>
-            </footer>
         </div>
     </div>
 </body>

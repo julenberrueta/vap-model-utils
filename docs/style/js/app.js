@@ -153,7 +153,7 @@ async function drawChartInRect1() {
       events: {
         click: function (e) {
           const x = e.xAxis && e.xAxis.length ? e.xAxis[0].value : undefined;
-          if (typeof x !== 'undefined') { console.log(`[Rect1] Click: hr=${x}`); selectTs(x); }
+          selectTs(x);
         }
       }
     },
@@ -178,7 +178,7 @@ async function drawChartInRect1() {
       }]
     },
     legend: { enabled: false },
-    tooltip: { pointFormat: 'Probability: <b>{point.y:.3f}</b><br>Hora: {point.x}' },
+    tooltip: { pointFormat: 'Probability: <b>{point.y:.3f}</b><br>Hour: {point.x}' },
     series: [{
       name: 'Probability',
       data: points,
@@ -235,7 +235,6 @@ async function drawAntibioticosInRect2() {
         click: function (e) {
           const x = e.xAxis && e.xAxis.length ? e.xAxis[0].value : undefined;
           if (typeof x !== 'undefined') {
-            console.log(`[Rect2] Click: hr=${x}`);
             selectTs(x);
           }
         }
@@ -268,7 +267,7 @@ async function drawAntibioticosInRect2() {
       }]
     },
     legend: { enabled: false },
-    tooltip: { pointFormat: 'Antibiotic days: <b>{point.y:.0f}</b><br>Hora: {point.x}' },
+    tooltip: { pointFormat: 'Antibiotic days: <b>{point.y:.0f}</b><br>Hour: {point.x}' },
     series: [{
       name: 'Antibiotics (days)',
       data: points,
@@ -361,6 +360,7 @@ async function renderShapChart(containerId, selTs) {
     credits: { enabled: false },
     // Con inverted:true, el eje de categorías es xAxis (vertical)
     xAxis: {
+      gridLineWidth: 1,
       categories,
       title: { text: '' },
       tickLength: 0
@@ -375,7 +375,7 @@ async function renderShapChart(containerId, selTs) {
     },
     tooltip: {
       formatter: function () {
-        return `<b>${this.point.name}</b><br>SHAP: <b>${this.y}</b><br>Valor: <b>${this.point.actual}</b>`;
+        return `<b>${this.point.name}</b><br>SHAP: <b>${this.y.toFixed(2)}</b><br>Valor: <b>${this.point.actual}</b>`;
       }
     },
     legend: { enabled: false },

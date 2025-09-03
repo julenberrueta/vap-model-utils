@@ -9,13 +9,12 @@
 ```
 vap-model-utils/
 │
+├── docs/                           # App simulation: interactive ICU web app to visualize predictions
 ├── vap_utils/                      # Main package directory
-│   ├── __init__.py                 # Initializes the package
-│   ├── data_processing.py          # Functions for data preprocessing and time window expansion
-│   ├── imputation.py               # Functions for missing value imputation and outlier removal
-│   ├── feature_engineering.py      # Functions for feature extraction and transformation
-│   ├── model_utils.py              # Functions for model training, hyperparameter tuning, and evaluation
-│   └── visualization.py            # Functions for data and model visualization
+│   ├── 01_PREPROCESSING.ipynb      # Preprocessing: imputation, missing analysis, categorical dummies, stats (-24h window)
+│   ├── 02_BEST_CLASSIFIER.ipynb    # Benchmarking: scores for all horizons, models, and feature selectors
+│   ├── 03_TRAIN_MODELS.ipynb       # Train CatBoost models (-1h, -24h, -48h) with selected features & hyperparameters
+│   ├── 04_EXPLAINABILITY.ipynb     # Explainability: SHAP plots and calibration plots
 │
 ├── requirements.txt                # Project dependencies
 ├── README.md                       # Project documentation (this file)
@@ -23,34 +22,54 @@ vap-model-utils/
 
 ---
 
-## 🛠 Contents and Purpose
+## 🛠 Notebooks Workflow
 
-### 1. Main Package (`vap_utils/`)
-- **`data_processing.py`**  
-  Functions for preprocessing time-series data, such as expanding data into rolling time windows for patient monitoring.
+### **`01_PREPROCESSING.ipynb`**
+- Imputation of missing values.  
+- Identification of variables with >30% missingness.  
+- Statistical analysis of the **-24h time window**.  
+- Creation of dummy variables for categorical features.  
 
-- **`imputation.py`**  
-  Handles missing data imputation and outlier removal using robust methods.
+---
 
-- **`feature_engineering.py`**  
-  Functions to extract and transform features from raw data, enabling better model performance.
+### **`02_BEST_CLASSIFIER.ipynb`**
+- Compute all classification scores across:  
+  - Different **time horizons**.  
+  - Multiple **models**.  
+  - Various **feature selection methods**.  
+- Corresponds to **Section 2.5** of the article.  
 
-- **`model_utils.py`**  
-  Tools for training models, performing hyperparameter tuning (e.g., Optuna), and handling imbalanced datasets.
+---
 
-- **`visualization.py`**  
-  Functions for visualizing data, patient timelines, probabilities, and key events using libraries like Plotly.
+### **`03_TRAIN_MODELS.ipynb`**
+- Train **CatBoost models** at horizons **-1h, -24h, and -48h**.  
+- Use the optimal number of features determined in `02_BEST_CLASSIFIER`.  
+- Hyperparameter tuning for each model.  
+- Display and compare performance results of all models.
+- Corresponds to **Section 2.7** of the article. 
+
+---
+
+### **`04_EXPLAINABILITY.ipynb`**
+- Generate and save **iterative imputer** file.
+- Generate **SHAP plots** for interpretability.  
+- Produce **calibration plots** to evaluate probability estimates.  
+
+---
+
+## 📊 `docs/` App Simulation
+Contains all the necessary files to **visualize predictions** in a simulated environment, replicating the ICU web app used in production.  
 
 ---
 
 ## 📄 Configuration and Metadata
 
 - **`requirements.txt`**  
-  Lists the project's dependencies.
+  Lists all dependencies required to reproduce the pipeline.  
 
 ---
 
 ### ✨ Acknowledgments
 
 - Developed by **Julen Berrueta Llona** 🧑‍💻  
-- Built to streamline data processing and modeling for **Ventilator-Associated Pneumonia** research.
+- Built to streamline data processing, predictive modeling, and deployment for **Ventilator-Associated Pneumonia** research.  
